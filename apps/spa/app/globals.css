@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--telecom-font-sans);
+  color: var(--telecom-color-ink-900);
+  background-color: var(--telecom-color-bg);
+  background-image: linear-gradient(
+    180deg,
+    var(--telecom-gradient-start) 0%,
+    var(--telecom-gradient-mid) 50%,
+    var(--telecom-gradient-end) 100%
+  );
+  background-attachment: fixed;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.root {
+  isolation: isolate;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+
+@layer base {
+  :root {
+    --background: 42 29% 97%;
+    --foreground: 60 3% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 60 3% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 60 3% 8%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 38% 96%;
+    --secondary-foreground: 60 3% 8%;
+    --muted: 210 38% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 210 38% 96%;
+    --accent-foreground: 60 3% 8%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 142 71% 45%;
+    --chart-3: 199 89% 48%;
+    --chart-4: 43 89% 58%;
+    --chart-5: 24 95% 53%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 60 3% 8%;
+    --foreground: 40 16% 89%;
+    --card: 30 3% 12%;
+    --card-foreground: 40 16% 89%;
+    --popover: 30 3% 12%;
+    --popover-foreground: 40 16% 89%;
+    --primary: 213 94% 68%;
+    --primary-foreground: 60 3% 8%;
+    --secondary: 60 2% 17%;
+    --secondary-foreground: 40 16% 89%;
+    --muted: 60 2% 17%;
+    --muted-foreground: 40 16% 70%;
+    --accent: 60 2% 17%;
+    --accent-foreground: 40 16% 89%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 3% 16%;
+    --input: 30 3% 16%;
+    --ring: 213 94% 68%;
+    --chart-1: 213 94% 68%;
+    --chart-2: 142 71% 45%;
+    --chart-3: 200 98% 39%;
+    --chart-4: 43 89% 58%;
+    --chart-5: 24 95% 53%;
+  }
+
+  * {
+    @apply border-border;
+  }
+}

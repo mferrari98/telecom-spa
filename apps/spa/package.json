@@ -1,0 +1,41 @@
+{
+  "name": "@telecom/spa",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0 --port 3000",
+    "dev:local": "next dev",
+    "dev:lan": "next dev --hostname 0.0.0.0 --port 3000",
+    "dev:reset": "rm -rf .next tsconfig.tsbuildinfo && next dev --hostname 0.0.0.0 --port 3000",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.2.0",
+    "@telecom/tokens": "workspace:*",
+    "@telecom/ui": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "html2canvas": "^1.4.1",
+    "lucide-react": "^0.546.0",
+    "next": "14.2.16",
+    "react": "18.3.1",
+    "react-day-picker": "^9.13.2",
+    "react-dom": "18.3.1",
+    "sqlite3": "^5.1.7",
+    "tailwind-merge": "^3.4.1",
+    "tailwindcss-animate": "^1.0.7",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/react": "^18.3.14",
+    "@types/react-dom": "^18.3.2",
+    "autoprefixer": "^10.4.24",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
+  }
+}

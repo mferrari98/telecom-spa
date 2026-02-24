@@ -1,0 +1,514 @@
+.t-button {
+  border: 1px solid transparent;
+  border-radius: var(--telecom-radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.t-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.t-button-sm {
+  min-height: 2rem;
+  padding: 0 0.75rem;
+}
+
+.t-button-md {
+  min-height: 2.25rem;
+  padding: 0 0.9rem;
+}
+
+.t-button-icon {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+}
+
+.t-button-primary {
+  background: var(--telecom-color-primary-600);
+  color: #ffffff;
+}
+
+.t-button-primary:hover {
+  background: var(--telecom-color-primary-700);
+}
+
+.t-button-secondary {
+  background: var(--telecom-color-accent-500);
+  color: #ffffff;
+}
+
+.t-button-secondary:hover {
+  background: var(--telecom-color-accent-600);
+}
+
+.t-button-outline {
+  background: transparent;
+  color: var(--telecom-color-ink-900);
+  border-width: 2px;
+  border-color: var(--telecom-color-border);
+}
+
+.t-button-outline:hover {
+  border-color: var(--telecom-color-border-strong);
+}
+
+.t-button-ghost {
+  background: transparent;
+  color: var(--telecom-color-subtle);
+}
+
+.t-button-ghost:hover {
+  background: rgb(59 130 246 / 0.1);
+}
+
+.t-card {
+  background: var(--telecom-color-surface-card);
+  border-radius: var(--telecom-radius-md);
+  border: 1px solid var(--telecom-color-border);
+  box-shadow: var(--telecom-shadow-card);
+  padding: 1rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.t-card h2 {
+  margin: 0;
+  color: var(--telecom-color-ink-900);
+  font-size: 1.1rem;
+}
+
+.t-card p {
+  margin: 0;
+  color: var(--telecom-color-ink-500);
+}
+
+.t-portal-root {
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    var(--telecom-gradient-start) 0%,
+    var(--telecom-gradient-mid) 50%,
+    var(--telecom-gradient-end) 100%
+  );
+  background-attachment: fixed;
+}
+
+.t-portal-container {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.t-portal-container-wide {
+  max-width: 82.5rem;
+}
+
+.t-portal-container-tight {
+  padding-left: 0.375rem;
+  padding-right: 0.375rem;
+}
+
+.t-portal-topbar {
+  border-bottom: 1px solid var(--telecom-color-border);
+}
+
+.t-portal-topbar-content {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.t-portal-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.t-portal-brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.t-portal-brand-icon-wrap {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--telecom-color-border);
+  background: var(--telecom-color-surface-card);
+  color: var(--telecom-color-ink-900);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.t-portal-brand-link {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--telecom-color-ink-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t-portal-brand-link:hover {
+  opacity: 0.82;
+}
+
+.t-portal-main {
+  padding: 1.5rem 0 2rem;
+}
+
+.t-portal-header {
+  margin: 2rem 0 1.5rem;
+}
+
+.t-portal-breadcrumb-slot {
+  display: flex;
+  align-items: center;
+  min-height: 1.25rem;
+}
+
+.t-portal-breadcrumb {
+  font-size: 0.875rem;
+  color: var(--telecom-color-ink-500);
+}
+
+.t-portal-header h1 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(2rem, 5vw, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  color: var(--telecom-color-ink-900);
+}
+
+.t-portal-header p {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+  color: var(--telecom-color-subtle);
+}
+
+.t-portal-divider {
+  border: 0;
+  border-top: 1px solid var(--telecom-color-border);
+  opacity: 0.5;
+  margin: 0 0 2rem;
+}
+
+.t-portal-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.t-portal-section h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--telecom-color-ink-900);
+}
+
+.t-portal-section-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.t-portal-section-grid-wide,
+.t-portal-section-grid-narrow {
+  grid-template-columns: 1fr;
+}
+
+.t-service-card-link {
+  display: block;
+  width: 100%;
+  border-radius: var(--telecom-radius-sm);
+}
+
+.t-service-card-link:focus-visible {
+  outline: 2px solid var(--telecom-color-subtle);
+  outline-offset: 2px;
+}
+
+.t-service-card {
+  border: 1px solid var(--telecom-color-border);
+  border-radius: var(--telecom-radius-sm);
+  background: var(--telecom-color-surface-card);
+  box-shadow: var(--telecom-shadow-card);
+  min-height: 4.8rem;
+  padding: 1rem;
+  transition: border-color 220ms ease, box-shadow 220ms ease, opacity 160ms ease;
+}
+
+.t-service-card:hover {
+  border-color: var(--telecom-color-border-strong);
+  box-shadow: var(--telecom-shadow-card-hover);
+}
+
+.t-service-card.is-loading {
+  opacity: 0.74;
+}
+
+.t-service-card-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.t-service-card-icon-wrap {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--telecom-radius-sm);
+  background: var(--telecom-color-icon-bg);
+  color: var(--telecom-color-ink-900);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.t-service-card-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  transition: transform 220ms ease;
+}
+
+.t-icon-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.t-service-card:hover .t-service-card-icon {
+  transform: scale(1.2);
+}
+
+.t-service-card-spinner {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  border: 2px solid rgb(59 130 246 / 0.25);
+  border-top-color: var(--telecom-color-primary-500);
+  animation: t-spin 1s linear infinite;
+}
+
+.t-service-card-body {
+  min-width: 0;
+}
+
+.t-service-card-body h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--telecom-color-ink-900);
+}
+
+.t-service-card-body p {
+  margin: 0.35rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: var(--telecom-color-ink-500);
+}
+
+.t-module-shell {
+  display: grid;
+}
+
+.t-module-header {
+  margin-top: 1.25rem;
+}
+
+.t-module-shell-body {
+  border: 1px solid var(--telecom-color-border);
+  border-radius: var(--telecom-radius-sm);
+  background: var(--telecom-color-surface-card);
+  box-shadow: var(--telecom-shadow-card);
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+  color: var(--telecom-color-ink-700);
+}
+
+.t-animate-fade-in {
+  animation: t-fade-in 0.6s ease-out forwards;
+}
+
+.t-animate-fade-in-up {
+  animation: t-slide-in-up 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.t-sonner-root {
+  --normal-bg: var(--telecom-color-surface-card) !important;
+  --normal-text: var(--telecom-color-ink-900) !important;
+  --normal-border: var(--telecom-color-border-strong) !important;
+}
+
+.t-sonner-toast {
+  border-radius: var(--telecom-radius-md) !important;
+  border: 1px solid var(--telecom-color-border-strong) !important;
+  box-shadow: var(--telecom-shadow-card-hover) !important;
+  background: rgb(255 255 255 / 0.96) !important;
+  backdrop-filter: blur(6px);
+  padding-right: 2.75rem !important;
+}
+
+.dark .t-sonner-toast {
+  background: rgb(24 24 23 / 0.95) !important;
+}
+
+.t-sonner-title {
+  font-weight: 600;
+}
+
+.t-sonner-description {
+  color: var(--telecom-color-ink-500);
+}
+
+.t-sonner-close {
+  left: auto !important;
+  right: 0.6rem !important;
+  inset-inline-start: auto !important;
+  inset-inline-end: 0.6rem !important;
+  border-color: var(--telecom-color-border) !important;
+  color: var(--telecom-color-ink-700) !important;
+  background: rgb(244 244 243 / 0.95) !important;
+}
+
+.dark .t-sonner-close {
+  color: #dbd9d5 !important;
+  background: rgb(44 43 42 / 0.95) !important;
+  border-color: rgb(255 255 255 / 0.2) !important;
+}
+
+.t-sonner-success {
+  border-left: 3px solid var(--telecom-color-primary-600) !important;
+}
+
+.t-sonner-error {
+  border-left: 3px solid #e11d48 !important;
+}
+
+.t-sonner-warning {
+  border-left: 3px solid #d97706 !important;
+}
+
+.t-sonner-info {
+  border-left: 3px solid var(--telecom-color-primary-500) !important;
+}
+
+.t-sonner-root [data-sonner-toast][data-mounted="true"] {
+  animation: t-toast-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.t-sonner-root [data-sonner-toast][data-removed="true"] {
+  animation: t-toast-exit 180ms ease-in both;
+}
+
+@keyframes t-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes t-slide-in-up {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes t-toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes t-toast-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+@keyframes t-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (min-width: 768px) {
+  .t-portal-section-grid-wide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .t-portal-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .t-portal-section-wide {
+    grid-column: span 2;
+  }
+
+  .t-portal-section-narrow {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .t-portal-container {
+    padding: 0 0.75rem;
+  }
+
+  .t-portal-topbar-content {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .t-portal-topbar-actions {
+    width: 100%;
+  }
+
+  .t-portal-main {
+    padding-top: 0.75rem;
+  }
+
+  .t-portal-header {
+    margin-top: 1.25rem;
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "web-telecom",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.3",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "turbo dev --parallel",
+    "dev:spa": "pnpm --filter @telecom/spa dev",
+    "dev:spa:lan": "pnpm --filter @telecom/spa dev:lan",
+    "dev:spa:reset": "pnpm --filter @telecom/spa dev:reset",
+    "build": "turbo build",
+    "build:spa": "pnpm --filter @telecom/spa build",
+    "typecheck": "turbo typecheck",
+    "docker:build:spa": "docker build -t webtelecom-spa:latest -f apps/spa/Dockerfile ."
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  }
+}

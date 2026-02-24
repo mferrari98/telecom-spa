@@ -1,0 +1,56 @@
+:root {
+  --telecom-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+
+  --telecom-color-primary-500: #3b82f6;
+  --telecom-color-primary-600: #2563eb;
+  --telecom-color-primary-700: #1d4ed8;
+  --telecom-color-accent-500: #22c55e;
+  --telecom-color-accent-600: #16a34a;
+
+  --telecom-color-bg: #faf9f5;
+  --telecom-color-surface-card: #ffffff;
+  --telecom-color-ink-900: #141413;
+  --telecom-color-ink-700: #4d4d4b;
+  --telecom-color-ink-500: #666666;
+  --telecom-color-border: #e2e8f0;
+  --telecom-color-border-strong: #cbd5e1;
+  --telecom-color-icon-bg: #f8fafc;
+  --telecom-color-subtle: #3b82f6;
+
+  --telecom-gradient-start: #faf9f5;
+  --telecom-gradient-mid: #f8f8f6;
+  --telecom-gradient-end: #ffffff;
+
+  --telecom-shadow-card: 0 1px 2px rgb(0 0 0 / 0.08);
+  --telecom-shadow-card-hover: 0 4px 10px rgb(0 0 0 / 0.14);
+
+  --telecom-space-xs: 0.25rem;
+  --telecom-space-sm: 0.5rem;
+  --telecom-space-md: 1rem;
+  --telecom-space-lg: 1.5rem;
+  --telecom-space-xl: 2rem;
+
+  --telecom-radius-sm: 0.5rem;
+  --telecom-radius-md: 0.75rem;
+  --telecom-radius-lg: 1.2rem;
+  --telecom-radius-pill: 999px;
+}
+
+.dark {
+  --telecom-color-bg: #141413;
+  --telecom-color-surface-card: #1f1e1d;
+  --telecom-color-ink-900: #e5e4e0;
+  --telecom-color-ink-700: rgb(229 228 224 / 0.7);
+  --telecom-color-ink-500: rgb(229 228 224 / 0.58);
+  --telecom-color-border: #1f1e1d;
+  --telecom-color-border-strong: #2a2a28;
+  --telecom-color-icon-bg: #141413;
+  --telecom-color-subtle: #60a5fa;
+
+  --telecom-gradient-start: #141413;
+  --telecom-gradient-mid: #0a0a09;
+  --telecom-gradient-end: #000000;
+
+  --telecom-shadow-card: 0 1px 2px rgb(0 0 0 / 0.35);
+  --telecom-shadow-card-hover: 0 8px 16px rgb(0 0 0 / 0.5);
+}

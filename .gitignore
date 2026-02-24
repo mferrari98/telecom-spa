@@ -1,0 +1,9 @@
+node_modules/
+.turbo/
+dist/
+build/
+coverage/
+.next/
+out/
+.DS_Store
+*.log
