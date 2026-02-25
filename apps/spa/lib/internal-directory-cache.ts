@@ -1,7 +1,7 @@
 import { access, readFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 
 type CellValue = string | number | boolean | Date | null | undefined;
 
@@ -42,7 +42,6 @@ type HeaderMap = {
 
 type InternalDirectoryCache = {
   entries: InternalDirectoryEntry[];
-  sourcePath: string;
   loadedAt: string;
 };
 
@@ -264,33 +263,55 @@ async function loadCacheFromFile(): Promise<InternalDirectoryCache> {
   if (!sourcePath) {
     return {
       entries: [],
-      sourcePath: "not-found",
       loadedAt: new Date().toISOString()
     };
   }
 
   const workbookBuffer = await readFile(sourcePath);
-  const workbook = XLSX.read(workbookBuffer, { type: "buffer" });
-  const firstSheetName = workbook.SheetNames[0];
-  if (!firstSheetName) {
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(workbookBuffer as unknown as never);
+
+  const worksheet = workbook.worksheets[0];
+  if (!worksheet) {
     return {
       entries: [],
-      sourcePath,
       loadedAt: new Date().toISOString()
     };
   }
 
-  const worksheet = workbook.Sheets[firstSheetName];
-  const rows = XLSX.utils.sheet_to_json(worksheet, {
-    header: 1,
-    raw: false,
-    blankrows: false,
-    defval: ""
-  }) as CellValue[][];
+  const rows: CellValue[][] = [];
+  worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+    if (rowNumber > MAX_ROWS) {
+      return;
+    }
+
+    const current: CellValue[] = [];
+    for (let col = 1; col <= MAX_COLS; col += 1) {
+      const value = row.getCell(col).value;
+      if (value && typeof value === "object" && "text" in value && typeof value.text === "string") {
+        current.push(value.text);
+        continue;
+      }
+
+      if (value && typeof value === "object" && "result" in value) {
+        const result = value.result;
+        current.push(typeof result === "undefined" ? "" : String(result));
+        continue;
+      }
+
+      if (Array.isArray(value)) {
+        current.push(value.map((part) => (typeof part === "object" && part && "text" in part ? String(part.text) : "")).join(""));
+        continue;
+      }
+
+      current.push(typeof value === "undefined" || value === null ? "" : String(value));
+    }
+
+    rows.push(current);
+  });
 
   return {
     entries: processRows(rows),
-    sourcePath,
     loadedAt: new Date().toISOString()
   };
 }

@@ -3,13 +3,14 @@ import { removeDeudor } from "@/lib/deudores-db";
 export const runtime = "nodejs";
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const deudorId = Number(context.params.id);
+  const { id } = await context.params;
+  const deudorId = Number(id);
   if (!Number.isInteger(deudorId)) {
     return Response.json({ error: "Deudor invalido" }, { status: 400 });
   }

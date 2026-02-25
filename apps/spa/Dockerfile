@@ -6,6 +6,10 @@ WORKDIR /app
 
 FROM base AS builder
 
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3 make g++ \
+  && rm -rf /var/lib/apt/lists/*
+
 COPY . .
 
 RUN pnpm install --frozen-lockfile
@@ -19,8 +23,10 @@ ENV PORT=3000
 
 WORKDIR /app
 
-COPY --from=builder /app/apps/spa/.next/standalone ./
-COPY --from=builder /app/apps/spa/.next/static ./apps/spa/.next/static
-COPY --from=builder /app/apps/spa/public ./apps/spa/public
+COPY --from=builder --chown=node:node /app/apps/spa/.next/standalone ./
+COPY --from=builder --chown=node:node /app/apps/spa/.next/static ./apps/spa/.next/static
+COPY --from=builder --chown=node:node /app/apps/spa/public ./apps/spa/public
+
+USER node
 
 CMD ["node", "apps/spa/server.js"]

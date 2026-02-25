@@ -8,8 +8,7 @@ export async function GET() {
     return Response.json({
       personnel: cache.entries,
       metadata: {
-        loadedAt: cache.loadedAt,
-        sourcePath: cache.sourcePath
+        loadedAt: cache.loadedAt
       }
     });
   } catch {

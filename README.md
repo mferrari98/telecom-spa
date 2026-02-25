@@ -50,7 +50,7 @@ pnpm docker:build:spa
 ## Nota de despliegue
 
 La app `apps/spa` corre en modo servidor Next.js (App Router) para soportar features del portal como `/api/internos`.
-`/api/internos` parsea `~/internos.xlsx` una sola vez al inicio y sirve resultados desde cache en memoria.
+`/api/internos` parsea `internos.xlsx` en el primer acceso y luego sirve resultados desde cache en memoria.
 
 ## Separacion de repos
 
@@ -60,4 +60,10 @@ Este repo queda dedicado a la SPA y su design system.
 - `telecom-reportespiolis`: servicio legacy de reportes
 - `telecom-deploy`: compose + nginx + variables de entorno para despliegue
 
-El deploy de stack ya no depende de `docker-compose.stack.yml` en este repo; se maneja desde `telecom-deploy` con imagenes publicadas.
+El deploy de stack ya no depende de `docker-compose.stack.yml` en este repo; se maneja desde `telecom-deploy` con build desde codigo fuente clonado en `sources/`.
+
+## Seguridad
+
+- No versionar `.env` en este repo.
+- Usar `.env.stack.example` como plantilla local (sin secretos reales).
+- Cambiar siempre credenciales por defecto/debiles de Basic Auth antes de exponer el servicio (`change-me`, `change-me-strong-password`, `comu`, `adminwiz`).

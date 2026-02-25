@@ -3,10 +3,10 @@ import { removeDeuda, updateDeuda } from "@/lib/deudores-db";
 export const runtime = "nodejs";
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     id: string;
     deudaId: string;
-  };
+  }>;
 };
 
 type DebtRequestPayload = {
@@ -18,8 +18,9 @@ type DebtRequestPayload = {
 };
 
 export async function PUT(request: Request, context: RouteContext) {
-  const deudorId = Number(context.params.id);
-  const deudaId = Number(context.params.deudaId);
+  const { id, deudaId: deudaIdParam } = await context.params;
+  const deudorId = Number(id);
+  const deudaId = Number(deudaIdParam);
   if (!Number.isInteger(deudorId) || !Number.isInteger(deudaId)) {
     return Response.json({ error: "Parametros invalidos" }, { status: 400 });
   }
@@ -46,8 +47,9 @@ export async function PUT(request: Request, context: RouteContext) {
 }
 
 export async function DELETE(_request: Request, context: RouteContext) {
-  const deudorId = Number(context.params.id);
-  const deudaId = Number(context.params.deudaId);
+  const { id, deudaId: deudaIdParam } = await context.params;
+  const deudorId = Number(id);
+  const deudaId = Number(deudaIdParam);
   if (!Number.isInteger(deudorId) || !Number.isInteger(deudaId)) {
     return Response.json({ error: "Parametros invalidos" }, { status: 400 });
   }

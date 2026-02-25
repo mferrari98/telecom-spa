@@ -6,8 +6,8 @@ services:
       dockerfile: infra/docker/nginx/Dockerfile
     restart: unless-stopped
     environment:
-      BASIC_AUTH_USER: "${BASIC_AUTH_USER:-comu}"
-      BASIC_AUTH_PASS: "${BASIC_AUTH_PASS:-adminwiz}"
+      BASIC_AUTH_USER: "${BASIC_AUTH_USER:-change-me}"
+      BASIC_AUTH_PASS: "${BASIC_AUTH_PASS:-change-me-strong-password}"
     depends_on:
       - spa
       - reportespiolis

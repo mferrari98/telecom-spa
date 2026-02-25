@@ -23,10 +23,6 @@ import { PortalHeader, Button, toast } from "@telecom/ui";
 
 type MonitorStats = {
   timestamp: string;
-  hostname: string;
-  platform: string;
-  arch: string;
-  nodeVersion: string;
   cpuUsagePct: number;
   cpuCores: number;
   loadAvg1: number;
@@ -291,9 +287,8 @@ export function MonitorClient() {
             <CardDescription>Informacion base del runtime.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-1 text-sm">
-            <p className="flex items-center gap-2"><Server className="h-4 w-4" />Host: {stats?.hostname ?? "-"}</p>
-            <p>Plataforma: {stats ? `${stats.platform}/${stats.arch}` : "-"}</p>
-            <p>Node: {stats?.nodeVersion ?? "-"}</p>
+            <p className="flex items-center gap-2"><Server className="h-4 w-4" />Servicio operativo</p>
+            <p>API: /api/monitor/stats/</p>
             {loading ? <p className="text-xs text-muted-foreground">Cargando datos...</p> : null}
           </CardContent>
         </Card>

@@ -3,9 +3,9 @@ import { getGuardiasCalendar } from "@/lib/guardias-data";
 import { GuardiasClient } from "./guardias-client";
 
 type GuardiasPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     anio?: string | string[];
-  };
+  }>;
 };
 
 function resolveAnio(rawAnio: string | string[] | undefined): number {
@@ -20,8 +20,9 @@ function resolveAnio(rawAnio: string | string[] | undefined): number {
   return Math.min(2100, Math.max(2000, parsedYear));
 }
 
-export default function GuardiasPage({ searchParams }: GuardiasPageProps) {
-  const anio = resolveAnio(searchParams?.anio);
+export default async function GuardiasPage({ searchParams }: GuardiasPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const anio = resolveAnio(resolvedSearchParams?.anio);
   const payload = getGuardiasCalendar(anio);
 
   return (

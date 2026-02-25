@@ -6,10 +6,6 @@ export const dynamic = "force-dynamic";
 
 type MonitorStatsPayload = {
   timestamp: string;
-  hostname: string;
-  platform: string;
-  arch: string;
-  nodeVersion: string;
   cpuUsagePct: number;
   cpuCores: number;
   loadAvg1: number;
@@ -168,10 +164,6 @@ export async function GET() {
 
     const payload: MonitorStatsPayload = {
       timestamp: new Date().toISOString(),
-      hostname: os.hostname(),
-      platform: os.platform(),
-      arch: os.arch(),
-      nodeVersion: process.version,
       cpuUsagePct,
       cpuCores: os.cpus().length,
       loadAvg1,

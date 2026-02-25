@@ -77,24 +77,6 @@ function computeSearchScore(
   return 0;
 }
 
-function readBootstrapEntries(): DirectoryEntry[] | null {
-  const script = document.getElementById("internal-directory-bootstrap");
-  if (!script || script.textContent === null) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(script.textContent);
-    if (!Array.isArray(parsed)) {
-      return null;
-    }
-
-    return parsed as DirectoryEntry[];
-  } catch {
-    return null;
-  }
-}
-
 export function InternalDirectoryDialog() {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,16 +89,6 @@ export function InternalDirectoryDialog() {
     async (force = false) => {
       if (loading) return;
       if (loaded && !force) return;
-
-      if (!force) {
-        const bootstrapEntries = readBootstrapEntries();
-        if (bootstrapEntries && bootstrapEntries.length > 0) {
-          setEntries(bootstrapEntries);
-          setLoaded(true);
-          setError(null);
-          return;
-        }
-      }
 
       try {
         setLoading(true);
@@ -154,14 +126,6 @@ export function InternalDirectoryDialog() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
-
-  useEffect(() => {
-    const bootstrapEntries = readBootstrapEntries();
-    if (bootstrapEntries && bootstrapEntries.length > 0) {
-      setEntries(bootstrapEntries);
-      setLoaded(true);
-    }
   }, []);
 
   useEffect(() => {
