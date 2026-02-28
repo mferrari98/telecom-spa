@@ -105,13 +105,13 @@ type GuardiasCalendarCacheEntry = {
 const calendarCache = new Map<number, GuardiasCalendarCacheEntry>();
 
 function parseGuardias(): string[] {
-  const raw = process.env.GUARDIAS || "Juan,Pedro,Maria,Ana";
+  const raw = process.env.GUARDIAS || "FERRARI,ARCE,CARO,DONATO";
   const parsed = raw
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
 
-  return parsed.length > 0 ? parsed : ["Juan", "Pedro", "Maria", "Ana"];
+  return parsed.length > 0 ? parsed : ["FERRARI", "ARCE", "CARO", "DONATO"];
 }
 
 function parseFechaReferencia(): Date {
@@ -124,7 +124,7 @@ function parseFechaReferencia(): Date {
 }
 
 function parseGuardiaReferencia(guardias: string[]): string {
-  const candidate = process.env.GUARDIA_REFERENCIA || guardias[0];
+  const candidate = process.env.GUARDIA_REFERENCIA || "DONATO";
   if (guardias.includes(candidate)) {
     return candidate;
   }

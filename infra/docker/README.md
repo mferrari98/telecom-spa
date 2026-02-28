@@ -51,6 +51,12 @@ El Nginx del stack usa certificado autofirmado, por lo que el navegador mostrara
 
 Si no existe, la app arranca igual con lista vacia.
 
+Tambien se puede cargar/reemplazar desde la web:
+
+- Entrar al portal autenticado
+- Abrir `Busqueda internos`
+- Usar `Cargar documento` y elegir un `.xlsx`
+
 Si quieres cargar internos reales, copia un archivo en el volumen `spa_data`
 o agrega un bind mount en `docker-compose.stack.yml`.
 
