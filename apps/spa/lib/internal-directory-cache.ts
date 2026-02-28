@@ -1,4 +1,4 @@
-import { access, readFile } from "node:fs/promises";
+import { access, mkdir, readFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import ExcelJS from "exceljs";
@@ -43,10 +43,17 @@ type HeaderMap = {
 type InternalDirectoryCache = {
   entries: InternalDirectoryEntry[];
   loadedAt: string;
+  hasDocument: boolean;
 };
 
 let cache: InternalDirectoryCache | null = null;
 let cachePromise: Promise<InternalDirectoryCache> | null = null;
+
+const DEFAULT_INTERNALS_XLSX_PATH = path.join(process.cwd(), "public", "internos.xlsx");
+
+function getPrimaryXlsxPath(): string {
+  return process.env.INTERNALS_XLSX_PATH || DEFAULT_INTERNALS_XLSX_PATH;
+}
 
 function normalizeText(value: string): string {
   return value
@@ -241,7 +248,7 @@ function processRows(rawRows: CellValue[][]): InternalDirectoryEntry[] {
 
 async function resolveXlsxPath(): Promise<string | null> {
   const candidates = [
-    process.env.INTERNALS_XLSX_PATH,
+    getPrimaryXlsxPath(),
     path.join(os.homedir(), "internos.xlsx"),
     path.join(process.cwd(), "public", "internos.xlsx")
   ].filter(Boolean) as string[];
@@ -258,12 +265,29 @@ async function resolveXlsxPath(): Promise<string | null> {
   return null;
 }
 
+export async function resolveTargetInternalsXlsxPath(): Promise<string> {
+  const targetPath = getPrimaryXlsxPath();
+  await mkdir(path.dirname(targetPath), { recursive: true });
+  return targetPath;
+}
+
+export function invalidateInternalDirectoryCache(): void {
+  cache = null;
+  cachePromise = null;
+}
+
+export async function reloadInternalDirectoryCache(): Promise<InternalDirectoryCache> {
+  invalidateInternalDirectoryCache();
+  return primeInternalDirectoryCache();
+}
+
 async function loadCacheFromFile(): Promise<InternalDirectoryCache> {
   const sourcePath = await resolveXlsxPath();
   if (!sourcePath) {
     return {
       entries: [],
-      loadedAt: new Date().toISOString()
+      loadedAt: new Date().toISOString(),
+      hasDocument: false
     };
   }
 
@@ -275,7 +299,8 @@ async function loadCacheFromFile(): Promise<InternalDirectoryCache> {
   if (!worksheet) {
     return {
       entries: [],
-      loadedAt: new Date().toISOString()
+      loadedAt: new Date().toISOString(),
+      hasDocument: true
     };
   }
 
@@ -312,7 +337,8 @@ async function loadCacheFromFile(): Promise<InternalDirectoryCache> {
 
   return {
     entries: processRows(rows),
-    loadedAt: new Date().toISOString()
+    loadedAt: new Date().toISOString(),
+    hasDocument: true
   };
 }
 

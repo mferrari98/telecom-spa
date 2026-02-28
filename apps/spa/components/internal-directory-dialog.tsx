@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { BookOpen, Loader2, Phone, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { BookOpen, Loader2, Phone, RefreshCw, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
@@ -19,6 +19,14 @@ type DirectoryEntry = {
   role: string;
   area: string;
   internal: string;
+};
+
+type DirectoryPayload = {
+  personnel: DirectoryEntry[];
+  metadata?: {
+    hasDocument?: boolean;
+  };
+  error?: string;
 };
 
 type SearchableEntry = DirectoryEntry & {
@@ -82,8 +90,15 @@ export function InternalDirectoryDialog() {
   const [searchQuery, setSearchQuery] = useState("");
   const [entries, setEntries] = useState<DirectoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [hasDocument, setHasDocument] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<{ type: "success" | "error"; message: string } | null>(
+    null
+  );
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadEntries = useCallback(
     async (force = false) => {
@@ -99,12 +114,13 @@ export function InternalDirectoryDialog() {
           throw new Error("No se pudo cargar el directorio.");
         }
 
-        const payload = await response.json();
+        const payload = (await response.json()) as DirectoryPayload;
         if (!payload || !Array.isArray(payload.personnel)) {
           throw new Error("Respuesta invalida del directorio.");
         }
 
-        setEntries(payload.personnel as DirectoryEntry[]);
+        setEntries(payload.personnel);
+        setHasDocument(Boolean(payload.metadata?.hasDocument));
         setLoaded(true);
       } catch {
         setError("No se pudo cargar internos.xlsx");
@@ -141,8 +157,61 @@ export function InternalDirectoryDialog() {
   useEffect(() => {
     if (!open) {
       setSearchQuery("");
+      setUploadStatus(null);
+      return;
     }
+
+    const focusId = window.requestAnimationFrame(() => {
+      searchInputRef.current?.focus();
+    });
+
+    return () => {
+      window.cancelAnimationFrame(focusId);
+    };
   }, [open]);
+
+  const handleUpload = useCallback(
+    async (file: File) => {
+      if (!file.name.toLowerCase().endsWith(".xlsx")) {
+        setUploadStatus({ type: "error", message: "Seleccione un archivo .xlsx" });
+        return;
+      }
+
+      try {
+        setUploading(true);
+        setUploadStatus(null);
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch("/api/internos/", {
+          method: "POST",
+          body: formData
+        });
+
+        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+        if (!response.ok) {
+          throw new Error(payload?.error || "No se pudo subir internos.xlsx");
+        }
+
+        await loadEntries(true);
+        setUploadStatus({ type: "success", message: "Documento cargado correctamente" });
+      } catch (uploadError) {
+        const message =
+          uploadError instanceof Error && uploadError.message
+            ? uploadError.message
+            : "No se pudo subir internos.xlsx";
+        setUploadStatus({ type: "error", message });
+      } finally {
+        setUploading(false);
+      }
+    },
+    [loadEntries]
+  );
+
+  const openFilePicker = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
 
   const searchableEntries = useMemo<SearchableEntry[]>(
     () =>
@@ -287,14 +356,84 @@ export function InternalDirectoryDialog() {
         onOpenChange={setOpen}
         title="Busqueda de internos"
         description="Busque personal por nombre, area o numero de interno."
-        commandProps={{ shouldFilter: false }}
+        commandProps={{ shouldFilter: false, className: "relative" }}
       >
+        {hasDocument ? (
+          <Button
+            type="button"
+            variant="ghost"
+            className="absolute right-10 top-4 z-20 h-4 w-4 rounded-sm p-0 opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            onClick={openFilePicker}
+            disabled={uploading}
+            aria-label="Subir documento"
+            title="Subir documento"
+          >
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          </Button>
+        ) : null}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          className="hidden"
+          onChange={(event) => {
+            const selectedFile = event.target.files?.[0];
+            if (selectedFile) {
+              void handleUpload(selectedFile);
+            }
+            event.target.value = "";
+          }}
+        />
         <CommandInput
+          ref={searchInputRef}
+          autoFocus
           value={searchQuery}
           onValueChange={setSearchQuery}
           placeholder="Buscar por nombre, area o interno..."
         />
         <CommandList>
+          {hasDocument === false ? (
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={openFilePicker}
+                disabled={uploading}
+              >
+                {uploading ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Upload className="mr-1.5 h-3.5 w-3.5" />
+                )}
+                Cargar documento
+              </Button>
+
+              {uploadStatus ? (
+                <span
+                  className={`text-xs ${
+                    uploadStatus.type === "error" ? "text-destructive" : "text-emerald-700 dark:text-emerald-400"
+                  }`}
+                >
+                  {uploadStatus.message}
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+
+          {hasDocument && uploadStatus ? (
+            <div className="border-b px-3 py-2 text-xs">
+              <span
+                className={
+                  uploadStatus.type === "error" ? "text-destructive" : "text-emerald-700 dark:text-emerald-400"
+                }
+              >
+                {uploadStatus.message}
+              </span>
+            </div>
+          ) : null}
+
           {loading && entries.length === 0 ? (
             <div className="flex items-center justify-center p-3 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
