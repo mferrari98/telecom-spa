@@ -28,6 +28,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (request.headers.get("x-user-role") !== "admin") {
+    return Response.json({ error: "No autorizado" }, { status: 403 });
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get("file");

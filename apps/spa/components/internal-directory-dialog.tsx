@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, Loader2, Phone, RefreshCw, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "./auth-provider";
 import {
   CommandDialog,
   CommandEmpty,
@@ -86,6 +87,7 @@ function computeSearchScore(
 }
 
 export function InternalDirectoryDialog() {
+  const { canUpload } = useAuth();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [entries, setEntries] = useState<DirectoryEntry[]>([]);
@@ -358,7 +360,7 @@ export function InternalDirectoryDialog() {
         description="Busque personal por nombre, area o numero de interno."
         commandProps={{ shouldFilter: false, className: "relative" }}
       >
-        {hasDocument ? (
+        {canUpload && hasDocument ? (
           <Button
             type="button"
             variant="ghost"
@@ -372,19 +374,21 @@ export function InternalDirectoryDialog() {
           </Button>
         ) : null}
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-          className="hidden"
-          onChange={(event) => {
-            const selectedFile = event.target.files?.[0];
-            if (selectedFile) {
-              void handleUpload(selectedFile);
-            }
-            event.target.value = "";
-          }}
-        />
+        {canUpload ? (
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            className="hidden"
+            onChange={(event) => {
+              const selectedFile = event.target.files?.[0];
+              if (selectedFile) {
+                void handleUpload(selectedFile);
+              }
+              event.target.value = "";
+            }}
+          />
+        ) : null}
         <CommandInput
           ref={searchInputRef}
           autoFocus
@@ -393,7 +397,7 @@ export function InternalDirectoryDialog() {
           placeholder="Buscar por nombre, area o interno..."
         />
         <CommandList>
-          {hasDocument === false ? (
+          {canUpload && hasDocument === false ? (
             <div className="flex flex-wrap items-center justify-between gap-2 border-b px-3 py-2">
               <Button
                 type="button"

@@ -149,7 +149,11 @@ async function getNetworkTotals() {
   };
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (request.headers.get("x-user-role") === "servicoop") {
+    return Response.json({ error: "No autorizado" }, { status: 403 });
+  }
+
   try {
     const [cpuUsagePct, memory, disk, network] = await Promise.all([
       getCpuUsagePct(),

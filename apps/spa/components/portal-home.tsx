@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import {
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { PortalGrid, PortalHeader, PortalSection } from "@telecom/ui";
+import { useAuth } from "./auth-provider";
 import { PortalLayout } from "./portal-layout";
 
 type Service = {
@@ -155,8 +156,19 @@ function ServiceTile({ service, loading, onNavigate }: ServiceTileProps) {
   );
 }
 
+const SERVICOOP_ALLOWED_SERVICE_IDS = ["guardias", "reportes"];
+
 export function PortalHome() {
+  const { user } = useAuth();
   const [loadingService, setLoadingService] = useState<string | null>(null);
+
+  const visibleLocalServices = useMemo(
+    () =>
+      user?.role === "servicoop"
+        ? localServices.filter((s) => SERVICOOP_ALLOWED_SERVICE_IDS.includes(s.id))
+        : localServices,
+    [user?.role]
+  );
 
   return (
     <PortalLayout>
@@ -182,7 +194,7 @@ export function PortalHome() {
 
       <PortalGrid>
         <PortalSection title="Apps locales" variant="wide">
-          {localServices.map((service) => (
+          {visibleLocalServices.map((service) => (
             <ServiceTile
               key={service.id}
               service={service}

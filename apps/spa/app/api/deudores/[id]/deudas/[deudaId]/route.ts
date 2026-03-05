@@ -18,6 +18,10 @@ type DebtRequestPayload = {
 };
 
 export async function PUT(request: Request, context: RouteContext) {
+  if (request.headers.get("x-user-role") === "servicoop") {
+    return Response.json({ error: "No autorizado" }, { status: 403 });
+  }
+
   const { id, deudaId: deudaIdParam } = await context.params;
   const deudorId = Number(id);
   const deudaId = Number(deudaIdParam);
@@ -46,7 +50,11 @@ export async function PUT(request: Request, context: RouteContext) {
   }
 }
 
-export async function DELETE(_request: Request, context: RouteContext) {
+export async function DELETE(request: Request, context: RouteContext) {
+  if (request.headers.get("x-user-role") === "servicoop") {
+    return Response.json({ error: "No autorizado" }, { status: 403 });
+  }
+
   const { id, deudaId: deudaIdParam } = await context.params;
   const deudorId = Number(id);
   const deudaId = Number(deudaIdParam);

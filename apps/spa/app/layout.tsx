@@ -3,6 +3,7 @@ import { Toaster } from "@telecom/ui";
 import "@telecom/tokens/tokens.css";
 import "@telecom/ui/styles.css";
 import "./globals.css";
+import { AuthProvider } from "@/components/auth-provider";
 
 export const metadata: Metadata = {
   title: "Portal de Servicios - Servicoop",
@@ -17,10 +18,12 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="es">
       <body>
-        <div className="root">
-          {children}
-          <Toaster />
-        </div>
+        <AuthProvider>
+          <div className="root">
+            {children}
+            <Toaster />
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

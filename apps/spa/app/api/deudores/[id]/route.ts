@@ -8,7 +8,10 @@ type RouteContext = {
   }>;
 };
 
-export async function DELETE(_request: Request, context: RouteContext) {
+export async function DELETE(request: Request, context: RouteContext) {
+  if (request.headers.get("x-user-role") === "servicoop") {
+    return Response.json({ error: "No autorizado" }, { status: 403 });
+  }
   const { id } = await context.params;
   const deudorId = Number(id);
   if (!Number.isInteger(deudorId)) {
