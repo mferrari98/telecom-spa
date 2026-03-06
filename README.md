@@ -66,4 +66,4 @@ El deploy de stack ya no depende de `docker-compose.stack.yml` en este repo; se 
 
 - No versionar `.env` en este repo.
 - Usar `.env.stack.example` como plantilla local (sin secretos reales).
-- Cambiar siempre credenciales por defecto/debiles de Basic Auth antes de exponer el servicio (`change-me`, `change-me-strong-password`, `comu`, `adminwiz`).
+- Cambiar siempre credenciales por defecto/debiles de Basic Auth antes de exponer el servicio (no usar placeholders ni valores legacy conocidos).

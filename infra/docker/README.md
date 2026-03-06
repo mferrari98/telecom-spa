@@ -16,12 +16,9 @@ cp .env.stack.example .env
 
 Opcional: cambiar puerto HTTPS.
 
-Credenciales Basic Auth (Nginx) por defecto:
+Credenciales Basic Auth (Nginx):
 
-- usuario: `comu`
-- password: `adminwiz`
-
-Se pueden cambiar en `.env` con `BASIC_AUTH_USER` y `BASIC_AUTH_PASS`.
+Configurar en `.env` con `BASIC_AUTH_USER` y `BASIC_AUTH_PASS` (no usar valores por defecto en produccion).
 Luego aplica cambios con `docker compose -p webtelecom -f docker-compose.stack.yml up -d --build nginx`.
 
 ## 2) Levantar sin conflictos con otros compose
