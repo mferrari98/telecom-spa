@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, Loader2, Phone, RefreshCw, Upload } from "lucide-react";
+import { BookOpen, Loader2, Phone, Pin, PinOff, RefreshCw, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "./auth-provider";
 import {
@@ -44,47 +44,47 @@ type ExtensionResult = {
   maxScore: number;
 };
 
-type RecentEntry = {
+type PinnedEntry = {
   label: string;
   internal: string;
-  count: number;
 };
 
-const RECIENTES_KEY = "internos-recientes";
-const MAX_STORED = 20;
-const MAX_DISPLAYED = 3;
+const PINNED_KEY = "internos-guardados";
+const MAX_PINNED = 5;
 
-function loadRecientes(): RecentEntry[] {
+function loadPinned(): PinnedEntry[] {
   try {
-    const raw = localStorage.getItem(RECIENTES_KEY);
+    const raw = localStorage.getItem(PINNED_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as RecentEntry[];
+    const parsed = JSON.parse(raw) as PinnedEntry[];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 }
 
-function saveReciente(label: string, internal: string): void {
-  const entries = loadRecientes();
-  const existing = entries.find(
-    (e) => e.label === label && e.internal === internal
-  );
-
-  if (existing) {
-    existing.count++;
-  } else {
-    entries.push({ label, internal, count: 1 });
-  }
-
-  entries.sort((a, b) => b.count - a.count);
-  localStorage.setItem(RECIENTES_KEY, JSON.stringify(entries.slice(0, MAX_STORED)));
+function savePinned(entries: PinnedEntry[]): void {
+  localStorage.setItem(PINNED_KEY, JSON.stringify(entries.slice(0, MAX_PINNED)));
 }
 
-function getTopRecientes(): RecentEntry[] {
-  return loadRecientes()
-    .sort((a, b) => b.count - a.count)
-    .slice(0, MAX_DISPLAYED);
+function addPin(label: string, internal: string): PinnedEntry[] {
+  const entries = loadPinned();
+  if (entries.some((e) => e.label === label && e.internal === internal)) return entries;
+  const updated = [...entries, { label, internal }].slice(0, MAX_PINNED);
+  savePinned(updated);
+  return updated;
+}
+
+function removePin(label: string, internal: string): PinnedEntry[] {
+  const entries = loadPinned().filter(
+    (e) => !(e.label === label && e.internal === internal)
+  );
+  savePinned(entries);
+  return entries;
+}
+
+function isPinned(pinned: PinnedEntry[], label: string, internal: string): boolean {
+  return pinned.some((e) => e.label === label && e.internal === internal);
 }
 
 function normalizeText(value: string): string {
@@ -144,8 +144,7 @@ export function InternalDirectoryDialog() {
   );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
-  const [recientes, setRecientes] = useState<RecentEntry[]>([]);
-  const lastRecordedQuery = useRef("");
+  const [pinned, setPinned] = useState<PinnedEntry[]>([]);
 
   const loadEntries = useCallback(
     async (force = false) => {
@@ -196,7 +195,7 @@ export function InternalDirectoryDialog() {
   }, [loadEntries]);
 
   useEffect(() => {
-    setRecientes(getTopRecientes());
+    setPinned(loadPinned());
   }, []);
 
   useEffect(() => {
@@ -374,23 +373,13 @@ export function InternalDirectoryDialog() {
       });
   }, [filteredEntries]);
 
-  useEffect(() => {
-    if (extensionResults.length === 0) return;
-
-    const topResult = extensionResults[0];
-    const label = topResult.people[0]?.name || topResult.department;
-    const key = `${label}:${topResult.extension}`;
-
-    if (key === lastRecordedQuery.current) return;
-
-    const timer = setTimeout(() => {
-      lastRecordedQuery.current = key;
-      saveReciente(label, topResult.extension);
-      setRecientes(getTopRecientes());
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [extensionResults]);
+  const handlePin = useCallback((label: string, internal: string) => {
+    if (isPinned(pinned, label, internal)) {
+      setPinned(removePin(label, internal));
+    } else {
+      setPinned(addPin(label, internal));
+    }
+  }, [pinned]);
 
   const groups = useMemo(() => {
     const grouped = new Map<string, ExtensionResult[]>();
@@ -505,7 +494,7 @@ export function InternalDirectoryDialog() {
             </div>
           ) : null}
 
-          {loading && entries.length === 0 ? (
+          {loading && entries.length === 0 && hasDocument !== false ? (
             <div className="flex items-center justify-center p-3 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
@@ -527,20 +516,42 @@ export function InternalDirectoryDialog() {
           ) : null}
 
           {!loading && !error && searchQuery.trim().length < 2 ? (
-            <div className="p-3 text-sm text-muted-foreground">
-              Escriba al menos 2 caracteres para buscar.
-            </div>
-          ) : null}
-
-          {!loading && !error && searchQuery.trim().length < 2 && recientes.length > 0 ? (
-            <div className="border-t px-3 py-2 text-xs text-muted-foreground">
-              <span className="font-medium">Recientes: </span>
-              {recientes.map((entry, i) => (
-                <span key={`${entry.label}-${entry.internal}`}>
-                  {i > 0 ? ", " : ""}
-                  {entry.label} int. {entry.internal}
-                </span>
-              ))}
+            <div className="px-3 py-2">
+              {pinned.length > 0 ? (
+                <>
+                  <p className="mb-1.5 text-xs font-medium text-muted-foreground">Guardados</p>
+                  <div className="flex flex-col gap-1">
+                    {pinned.map((entry) => (
+                      <div
+                        key={`${entry.label}-${entry.internal}`}
+                        className="group flex items-center justify-between rounded-md bg-muted/50 px-2.5 py-1.5 text-sm"
+                      >
+                        <div className="flex min-w-0 items-center gap-2">
+                          <Pin className="h-3 w-3 shrink-0 text-muted-foreground" />
+                          <span className="truncate">{entry.label}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="shrink-0 text-xs text-muted-foreground">
+                            int. {entry.internal}
+                          </span>
+                          <button
+                            type="button"
+                            className="hidden rounded p-0.5 text-muted-foreground hover:text-destructive group-hover:inline-flex"
+                            onClick={() => handlePin(entry.label, entry.internal)}
+                            title="Quitar de guardados"
+                          >
+                            <PinOff className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Pase el mouse sobre un resultado y presione <Pin className="mb-0.5 inline h-3 w-3" /> para guardarlo.
+                </p>
+              )}
             </div>
           ) : null}
 
@@ -553,6 +564,7 @@ export function InternalDirectoryDialog() {
                   {extensionEntries.map((entry) => (
                     <CommandItem
                       key={`${department}-${entry.extension}`}
+                      className="group"
                       value={`${department} ${entry.extension} ${entry.people
                         .map((person) => `${person.name} ${person.role}`)
                         .join(" ")}`}
@@ -568,7 +580,28 @@ export function InternalDirectoryDialog() {
                           {entry.people.map((person) => person.name).join(" · ")}
                         </span>
                       </div>
-                      <CommandShortcut>Int. {entry.extension}</CommandShortcut>
+                      <div className="ml-auto flex items-center gap-1">
+                        <button
+                          type="button"
+                          className={`rounded p-0.5 transition-opacity ${
+                            isPinned(pinned, entry.people[0]?.name || department, entry.extension)
+                              ? "text-foreground opacity-100"
+                              : "text-muted-foreground opacity-0 hover:opacity-100 group-hover:opacity-70"
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePin(entry.people[0]?.name || department, entry.extension);
+                          }}
+                          title={
+                            isPinned(pinned, entry.people[0]?.name || department, entry.extension)
+                              ? "Quitar de guardados"
+                              : "Guardar"
+                          }
+                        >
+                          <Pin className="h-3.5 w-3.5" />
+                        </button>
+                        <CommandShortcut>Int. {entry.extension}</CommandShortcut>
+                      </div>
                     </CommandItem>
                   ))}
                 </CommandGroup>
