@@ -44,6 +44,49 @@ type ExtensionResult = {
   maxScore: number;
 };
 
+type RecentEntry = {
+  label: string;
+  internal: string;
+  count: number;
+};
+
+const RECIENTES_KEY = "internos-recientes";
+const MAX_STORED = 20;
+const MAX_DISPLAYED = 3;
+
+function loadRecientes(): RecentEntry[] {
+  try {
+    const raw = localStorage.getItem(RECIENTES_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as RecentEntry[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveReciente(label: string, internal: string): void {
+  const entries = loadRecientes();
+  const existing = entries.find(
+    (e) => e.label === label && e.internal === internal
+  );
+
+  if (existing) {
+    existing.count++;
+  } else {
+    entries.push({ label, internal, count: 1 });
+  }
+
+  entries.sort((a, b) => b.count - a.count);
+  localStorage.setItem(RECIENTES_KEY, JSON.stringify(entries.slice(0, MAX_STORED)));
+}
+
+function getTopRecientes(): RecentEntry[] {
+  return loadRecientes()
+    .sort((a, b) => b.count - a.count)
+    .slice(0, MAX_DISPLAYED);
+}
+
 function normalizeText(value: string): string {
   return value
     .toLowerCase()
@@ -101,6 +144,8 @@ export function InternalDirectoryDialog() {
   );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const [recientes, setRecientes] = useState<RecentEntry[]>([]);
+  const lastRecordedQuery = useRef("");
 
   const loadEntries = useCallback(
     async (force = false) => {
@@ -149,6 +194,10 @@ export function InternalDirectoryDialog() {
   useEffect(() => {
     void loadEntries();
   }, [loadEntries]);
+
+  useEffect(() => {
+    setRecientes(getTopRecientes());
+  }, []);
 
   useEffect(() => {
     if (open && !loaded && !loading) {
@@ -325,6 +374,24 @@ export function InternalDirectoryDialog() {
       });
   }, [filteredEntries]);
 
+  useEffect(() => {
+    if (extensionResults.length === 0) return;
+
+    const topResult = extensionResults[0];
+    const label = topResult.people[0]?.name || topResult.department;
+    const key = `${label}:${topResult.extension}`;
+
+    if (key === lastRecordedQuery.current) return;
+
+    const timer = setTimeout(() => {
+      lastRecordedQuery.current = key;
+      saveReciente(label, topResult.extension);
+      setRecientes(getTopRecientes());
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [extensionResults]);
+
   const groups = useMemo(() => {
     const grouped = new Map<string, ExtensionResult[]>();
 
@@ -462,6 +529,18 @@ export function InternalDirectoryDialog() {
           {!loading && !error && searchQuery.trim().length < 2 ? (
             <div className="p-3 text-sm text-muted-foreground">
               Escriba al menos 2 caracteres para buscar.
+            </div>
+          ) : null}
+
+          {!loading && !error && searchQuery.trim().length < 2 && recientes.length > 0 ? (
+            <div className="border-t px-3 py-2 text-xs text-muted-foreground">
+              <span className="font-medium">Recientes: </span>
+              {recientes.map((entry, i) => (
+                <span key={`${entry.label}-${entry.internal}`}>
+                  {i > 0 ? ", " : ""}
+                  {entry.label} int. {entry.internal}
+                </span>
+              ))}
             </div>
           ) : null}
 
