@@ -50,7 +50,7 @@ type PinnedEntry = {
 };
 
 const PINNED_KEY = "internos-guardados";
-const MAX_PINNED = 5;
+const MAX_PINNED = 10;
 
 function loadPinned(): PinnedEntry[] {
   try {
@@ -581,25 +581,27 @@ export function InternalDirectoryDialog() {
                         </span>
                       </div>
                       <div className="ml-auto flex items-center gap-1">
-                        <button
-                          type="button"
-                          className={`rounded p-0.5 transition-opacity ${
-                            isPinned(pinned, entry.people[0]?.name || department, entry.extension)
-                              ? "text-foreground opacity-100"
-                              : "text-muted-foreground opacity-0 hover:opacity-100 group-hover:opacity-70"
-                          }`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handlePin(entry.people[0]?.name || department, entry.extension);
-                          }}
-                          title={
-                            isPinned(pinned, entry.people[0]?.name || department, entry.extension)
-                              ? "Quitar de guardados"
-                              : "Guardar"
-                          }
-                        >
-                          <Pin className="h-3.5 w-3.5" />
-                        </button>
+                        {(() => {
+                          const pinLabel = entry.people.length > 1 ? department : (entry.people[0]?.name || department);
+                          const entryPinned = isPinned(pinned, pinLabel, entry.extension);
+                          return (
+                            <button
+                              type="button"
+                              className={`rounded p-0.5 transition-opacity ${
+                                entryPinned
+                                  ? "text-foreground opacity-100"
+                                  : "text-muted-foreground opacity-0 hover:opacity-100 group-hover:opacity-70"
+                              }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePin(pinLabel, entry.extension);
+                              }}
+                              title={entryPinned ? "Quitar de guardados" : "Guardar"}
+                            >
+                              <Pin className="h-3.5 w-3.5" />
+                            </button>
+                          );
+                        })()}
                         <CommandShortcut>Int. {entry.extension}</CommandShortcut>
                       </div>
                     </CommandItem>
