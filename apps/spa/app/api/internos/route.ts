@@ -52,8 +52,14 @@ export async function POST(request: Request) {
       return Response.json({ error: "El archivo supera el limite de 10 MB" }, { status: 413 });
     }
 
-    const targetPath = await resolveTargetInternalsXlsxPath();
     const fileBuffer = Buffer.from(await file.arrayBuffer());
+
+    // Validate ZIP magic bytes (xlsx is a ZIP archive)
+    if (fileBuffer.length < 4 || fileBuffer[0] !== 0x50 || fileBuffer[1] !== 0x4b) {
+      return Response.json({ error: "El archivo no es un xlsx valido" }, { status: 400 });
+    }
+
+    const targetPath = await resolveTargetInternalsXlsxPath();
     await writeFile(targetPath, fileBuffer);
 
     const cache = await reloadInternalDirectoryCache();

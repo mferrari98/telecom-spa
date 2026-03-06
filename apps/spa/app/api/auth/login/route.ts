@@ -6,14 +6,23 @@ export const runtime = "nodejs";
 
 const LOGIN_WINDOW_MS = 60_000;
 const MAX_ATTEMPTS = 5;
+const MAX_TRACKED_IPS = 10_000;
 const attempts = new Map<string, { count: number; resetAt: number }>();
 
-function isRateLimited(ip: string): boolean {
+function cleanupExpired() {
   const now = Date.now();
-  const record = attempts.get(ip);
+  for (const [key, record] of attempts) {
+    if (now > record.resetAt) attempts.delete(key);
+  }
+}
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const record = attempts.get(key);
 
   if (!record || now > record.resetAt) {
-    attempts.set(ip, { count: 1, resetAt: now + LOGIN_WINDOW_MS });
+    if (attempts.size >= MAX_TRACKED_IPS) cleanupExpired();
+    attempts.set(key, { count: 1, resetAt: now + LOGIN_WINDOW_MS });
     return false;
   }
 
@@ -24,7 +33,7 @@ function isRateLimited(ip: string): boolean {
 export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 
-  if (isRateLimited(ip)) {
+  if (isRateLimited(`ip:${ip}`)) {
     return Response.json(
       { error: "Demasiados intentos. Espere un minuto." },
       { status: 429 }
@@ -39,12 +48,20 @@ export async function POST(request: Request) {
       return Response.json({ error: "Usuario y contraseña son requeridos" }, { status: 400 });
     }
 
+    if (isRateLimited(`user:${username}`)) {
+      return Response.json(
+        { error: "Demasiados intentos. Espere un minuto." },
+        { status: 429 }
+      );
+    }
+
     const user = await findUser(username);
     if (!user || !(await verifyPassword(password, user.passwordHash))) {
       return Response.json({ error: "Credenciales incorrectas" }, { status: 401 });
     }
 
-    attempts.delete(ip);
+    attempts.delete(`ip:${ip}`);
+    attempts.delete(`user:${username}`);
 
     const token = await signToken(user.username, user.role);
 
