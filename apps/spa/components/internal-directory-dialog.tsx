@@ -531,7 +531,7 @@ export function InternalDirectoryDialog() {
                           <span className="truncate">{entry.label}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="shrink-0 text-xs text-muted-foreground">
+                          <span className="shrink-0 text-sm text-muted-foreground">
                             int. {entry.internal}
                           </span>
                           <button
@@ -576,11 +576,11 @@ export function InternalDirectoryDialog() {
                             ? entry.people[0].name
                             : `${entry.people[0].name} +${entry.people.length - 1}`}
                         </span>
-                        <span className="truncate text-xs text-muted-foreground">
+                        <span className="truncate text-sm text-muted-foreground">
                           {entry.people.map((person) => person.name).join(" · ")}
                         </span>
                       </div>
-                      <div className="ml-auto flex items-center gap-1">
+                      <div className="ml-auto flex shrink-0 items-center gap-1">
                         {(() => {
                           const pinLabel = entry.people.length > 1 ? department : (entry.people[0]?.name || department);
                           const entryPinned = isPinned(pinned, pinLabel, entry.extension);
@@ -602,7 +602,7 @@ export function InternalDirectoryDialog() {
                             </button>
                           );
                         })()}
-                        <CommandShortcut>Int. {entry.extension}</CommandShortcut>
+                        <CommandShortcut className="text-sm">Int. {entry.extension}</CommandShortcut>
                       </div>
                     </CommandItem>
                   ))}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, KeyRound, Loader2, Moon, Shield, Users } from "lucide-react";
+import { ArrowLeft, KeyRound, Loader2, Moon, RadioTower, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -98,7 +98,7 @@ export function LoginClient() {
       <div className="w-full max-w-[360px] space-y-6">
         <div className="space-y-2 text-center">
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card">
-            <Shield className="h-4 w-4 text-foreground" />
+            <RadioTower className="h-4 w-4 text-foreground" />
           </div>
           <h1 className="text-lg font-semibold text-foreground">
             Telecomunicaciones

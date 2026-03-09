@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useState } from "react";
-import { LogOut, Moon, Shield } from "lucide-react";
+import { LogOut, Moon, RadioTower } from "lucide-react";
 import { Popover } from "@base-ui/react/popover";
 import { PortalBrand, PortalShell } from "@telecom/ui";
 import { Switch } from "@/components/ui/switch";
@@ -128,7 +128,7 @@ export function PortalLayout({ contentClassName, children }: PortalLayoutProps) 
         <PortalBrand
           href="/"
           label="Telecomunicaciones y Automatismos"
-          icon={<Shield className="t-icon-sm" />}
+          icon={<RadioTower className="t-icon-sm" />}
         />
       }
       actions={
