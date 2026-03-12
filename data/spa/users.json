@@ -1,17 +1,5 @@
 [
-  {
-    "username": "admin",
-    "passwordHash": "100000:QqSBYG7BBGKJDFHwb3PG2w:U0L9Mfc0JjAqV1IUCAGSI0acODkHjCY4uv9dDDEVvIA",
-    "role": "admin"
-  },
-  {
-    "username": "operador",
-    "passwordHash": "100000:IYnphzob8KlLmn5KEaA9PA:siBAWo-40UmHPjNIcotj4CcL5ZREGcL49Kw9aNe0gZU",
-    "role": "operador"
-  },
-  {
-    "username": "servicoop",
-    "passwordHash": "100000:DnZ5FOwtImdswOGI899wkw:5lN-0v5nXhafpjFK1exKnwkcP549aphPttjxcLMGHKE",
-    "role": "servicoop"
-  }
+  { "username": "admin", "role": "admin" },
+  { "username": "operador", "role": "operador" },
+  { "username": "servicoop", "role": "servicoop" }
 ]
