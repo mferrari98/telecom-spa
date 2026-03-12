@@ -65,5 +65,5 @@ El deploy de stack ya no depende de `docker-compose.stack.yml` en este repo; se 
 ## Seguridad
 
 - No versionar `.env` en este repo.
-- Usar `.env.stack.example` como plantilla local (sin secretos reales).
-- Cambiar siempre credenciales por defecto/debiles de Basic Auth antes de exponer el servicio (no usar placeholders ni valores legacy conocidos).
+- Las contraseñas de usuario se gestionan via variables de entorno (`USER_<NAME>_PASSWORD`) en `telecom-deploy/.env`.
+- Los tokens de sesion se firman con `SESSION_SECRET` (generado automaticamente por `./setup`).

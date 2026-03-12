@@ -14,9 +14,12 @@
     "build": "turbo build",
     "build:spa": "pnpm --filter @telecom/spa build",
     "typecheck": "turbo typecheck",
-    "docker:build:spa": "docker build -t webtelecom-spa:latest -f apps/spa/Dockerfile ."
+    "docker:build:spa": "docker build -t webtelecom-spa:latest -f apps/spa/Dockerfile .",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "turbo": "^2.3.3",
     "typescript": "^5.7.2"
   },

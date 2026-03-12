@@ -11,3 +11,5 @@ out/
 .env.*
 !.env.example
 !.env.stack.example
+playwright-report/
+test-results/
