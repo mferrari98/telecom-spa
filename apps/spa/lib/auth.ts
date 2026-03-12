@@ -41,10 +41,6 @@ export function canAccess(role: string, pathname: string): boolean {
   return false;
 }
 
-export function canUploadInternos(role: string): boolean {
-  return role === "admin";
-}
-
 function getSecretKey(): Promise<CryptoKey> {
   const secret = process.env.SESSION_SECRET;
   if (!secret) throw new Error("SESSION_SECRET is not set");
