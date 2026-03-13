@@ -1,6 +1,7 @@
 export const SESSION_COOKIE_NAME = "__session";
 
 const PBKDF2_ITERATIONS = 100_000;
+const PBKDF2_MAX_ITERATIONS = 2_000_000;
 const PBKDF2_SALT_BYTES = 16;
 const PBKDF2_HASH_BYTES = 32;
 
@@ -10,14 +11,11 @@ type TokenPayload = {
   exp: number;
 };
 
-const SERVICOOP_BLOCKED_ROUTES = [
-  "/deudores/",
-  "/monitor/",
-  "/pedidos/",
-  "/api/deudores/",
-  "/api/monitor/",
-  "/api/pedidos/"
-];
+export type SessionInfo = {
+  username: string;
+  role: string;
+};
+
 const PUBLIC_ROUTES = ["/login/", "/api/auth/", "/_next/", "/favicon.ico", "/healthz"];
 const SERVICOOP_ALLOWED_ROUTES = [
   "/",
@@ -26,6 +24,12 @@ const SERVICOOP_ALLOWED_ROUTES = [
   "/api/internos/",
   "/reporte/"
 ];
+
+export function isSecureSessionCookieEnabled(): boolean {
+  const value = process.env.SESSION_COOKIE_SECURE?.trim().toLowerCase();
+  if (!value) return process.env.NODE_ENV === "production";
+  return value === "1" || value === "true";
+}
 
 export function isPublicRoute(pathname: string): boolean {
   return PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
@@ -41,14 +45,20 @@ export function canAccess(role: string, pathname: string): boolean {
   return false;
 }
 
-function getSecretKey(): Promise<CryptoKey> {
+let cachedSecretKey: CryptoKey | null = null;
+let cachedSecretRaw: string | null = null;
+
+async function getSecretKey(): Promise<CryptoKey> {
   const secret = process.env.SESSION_SECRET;
   if (!secret) throw new Error("SESSION_SECRET is not set");
+  if (cachedSecretKey && cachedSecretRaw === secret) return cachedSecretKey;
   const enc = new TextEncoder();
-  return crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, [
+  cachedSecretKey = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, [
     "sign",
     "verify"
   ]);
+  cachedSecretRaw = secret;
+  return cachedSecretKey;
 }
 
 function base64urlEncode(data: ArrayBuffer | Uint8Array): string {
@@ -87,6 +97,9 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
     if (!valid) return null;
 
     const payload = JSON.parse(new TextDecoder().decode(base64urlDecode(payloadB64))) as TokenPayload;
+    if (typeof payload.sub !== "string" || !payload.sub) return null;
+    if (typeof payload.role !== "string" || !payload.role) return null;
+    if (typeof payload.exp !== "number") return null;
     if (payload.exp < Math.floor(Date.now() / 1000)) return null;
 
     return payload;
@@ -109,12 +122,27 @@ export async function hashPassword(password: string): Promise<string> {
   return `${PBKDF2_ITERATIONS}:${base64urlEncode(salt)}:${base64urlEncode(derived)}`;
 }
 
+export async function getSessionFromCookie(): Promise<SessionInfo | null> {
+  try {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+    if (!token) return null;
+    const payload = await verifyToken(token);
+    if (!payload) return null;
+    return { username: payload.sub, role: payload.role };
+  } catch {
+    return null;
+  }
+}
+
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   try {
     const [iterStr, saltB64, hashB64] = stored.split(":");
     if (!iterStr || !saltB64 || !hashB64) return false;
 
     const iterations = parseInt(iterStr, 10);
+    if (!Number.isFinite(iterations) || iterations < 1 || iterations > PBKDF2_MAX_ITERATIONS) return false;
     const salt = base64urlDecode(saltB64);
     const expectedHash = base64urlDecode(hashB64);
 

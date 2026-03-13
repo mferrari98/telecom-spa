@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { SESSION_COOKIE_NAME } from "@/lib/auth";
+import { SESSION_COOKIE_NAME, isSecureSessionCookieEnabled } from "@/lib/auth";
 
 export async function POST() {
   const cookieStore = await cookies();
@@ -7,6 +7,7 @@ export async function POST() {
     path: "/",
     httpOnly: true,
     sameSite: "lax",
+    secure: isSecureSessionCookieEnabled(),
     maxAge: 0
   });
 

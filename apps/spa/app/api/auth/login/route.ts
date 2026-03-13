@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { SESSION_COOKIE_NAME, signToken, verifyPassword } from "@/lib/auth";
+import { SESSION_COOKIE_NAME, isSecureSessionCookieEnabled, signToken, verifyPassword } from "@/lib/auth";
 import { findUser } from "@/lib/users";
 
 export const runtime = "nodejs";
@@ -70,6 +70,7 @@ export async function POST(request: Request) {
       path: "/",
       httpOnly: true,
       sameSite: "lax",
+      secure: isSecureSessionCookieEnabled(),
       maxAge: 86400
     });
 
